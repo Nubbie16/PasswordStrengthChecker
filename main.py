@@ -34,8 +34,30 @@ Rule List:
 
 import CheckLogic
 
+password = ""
+
+def get_strength(score):
+    if score <= 2:
+        return "Weak"
+    elif score <= 5:
+        return "Average"
+    elif score <= 8:
+        return "Strong"
+    else:
+        return "Very Strong"
+
+
 def main():
     print("Program Start")
+
+    password = input("Please enter password: ")
+
+    score = CheckLogic.check_strength(password)
+    strength = get_strength(score)
+    
+    print(f"Score: {score}")
+    print(f"Strength: {strength}")
+
 
 if __name__ == "__main__":
     main()

@@ -89,6 +89,6 @@ def contains_non_ascii(password):
 
 # 15. Final strength rating
 def check_strength(password):
-
+    score = 5
 
     return score
