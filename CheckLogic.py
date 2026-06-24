@@ -34,16 +34,13 @@ Rule List:
 
 
 from PasswordData import WEAK_WORDS, COMMON_PASSWORDS, KEYBOARD_PATTERNS
+import re
 
-   #initial password strength score
-
-
-
-# 1. Empty password check
+# 1. Empty password check               # Pass/Fail
 def is_filled(password):
     return password.strip() != ""       #returns the condition directly, simplifing the if statement
 
-# 2. Emoji / non-ASCII check
+# 2. Emoji / non-ASCII check            # Pass/Fail
 def contains_only_ascii(password):
     for char in password:
         value = ord(char)
@@ -52,46 +49,102 @@ def contains_only_ascii(password):
             return False
     return True
 
-# 3. Minimum length check
+# 3. Minimum length check               # Pass/Fail
 def meets_min_length(password):
     return len(password) >= 8
 
-# 4. Common password check
+# 4. Common password check              # Pass/Fail
 def not_common(password):
     for common in COMMON_PASSWORDS:
         if common == True:
             return False
     return True
 
-# 5. Contains common weak word check
+# 5. Contains common weak word check    # -2
+def contains_weak_PEN(password):
+    for weak in WEAK_WORDS:
+        if weak in password:
+            return -2
+    return 0
 
+# 6. Length scoring                     # 8-11 = +1       12-15 = +3       16 or more = +4
+def length_score(password):
+    length = len(password)
 
-# 6. Length scoring
+    if length >= 8 and length < 12:
+        return 1
+    elif length <= 15:
+        return 3
+    elif length > 15:
+        return 4
 
+# 7. Lowercase check                    # +1
+def has_lowercase_score(password):
+    if any(char.islower() for char in password):
+        return 1
+    else:
+        return 0
 
-# 7. Lowercase check
+# 8. Uppercase check                    # +1
+def has_uppercase_score(password):
+    if any(char.isupper() for char in password):
+        return 1
+    else:
+        return 0
 
+# 9. Number check                       # +1
+def has_number_score(password):
+    if any(char.isdigit() for char in password):
+        return 1
+    else:
+        return 0
 
-# 8. Uppercase check
+# 10. Special character check           # +1
+def has_special_score(password):
 
+    special_chars = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~"
 
-# 9. Number check
+    if any(char in special_chars for char in password):
+        return 1
+    else:
+        return 0
 
+# 11. Repeating character penalty       # -1
+def repeating_chars_PEN(password):
 
-# 10. Special character check
+    if re.search(r"(.)\1{2,}", password) is not None:
+        return 1
+    else:
+        return 0
 
+# 12. Sequential number penalty         # -1
+def seq_number_PEN(password):
+    ascending = "0123456789"
+    descending = "9876543210"
 
-# 11. Repeating character penalty
+    for i in range(len(ascending) - 2):
+        seq = ascending[i:i + 3]
 
+        if seq in password:
+            return 1
 
-# 12. Sequential number penalty
+    for i in range(len(descending) - 2):
+        seq = descending[i:i + 3]
+        
+        if seq in password:
+            return 1
 
+    return 0
 
-# 13. Keyboard pattern penalty
+# 13. Keyboard pattern penalty          # -2
+def contains_key_pattern_PEN(password):
+    for key in KEYBOARD_PATTERNS:
+        if key in password:
+            return -2
+    return 0
 
-
-# 14. All-numeric penalty (< 16 == FAIL, >= 16 == penalty)
-def all_nums_length(password):
+# 14. All-numeric penalty (< 16 == FAIL, >= 16 == penalty)      # Pass/Fail or -2
+def all_nums_length_PEN(password):
     if meets_min_length(password) == False:
         return -1
     
@@ -101,28 +154,22 @@ def all_nums_length(password):
             return -1
         else:
             if len(password) < 16:
-                return 
-        
-
-    return True
-
-
+                return 2
+    return 0
 
 PASS_FAIL_FUNCS = [
     is_filled,               # 1. Empty password check
     contains_only_ascii,     # 2. Emoji / non-ASCII check
     meets_min_length,        # 3. Minimum length check
-    not_common,              # 4. Common password check
-    
+    not_common               # 4. Common password check
 ]
 
 def pass_fail_check(password):         # 1.-4. will return False immediately w/o any additional checks 
     
         for check in PASS_FAIL_FUNCS:
-            if check(password) == True:
-                return False
-            
-        return True
+            if check(password) != True:
+                return False    # checks did not pass. password failed
+        return True     
     
 # 15. Determines final score
 def check_strength(password):
