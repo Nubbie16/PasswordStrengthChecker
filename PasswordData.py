@@ -8,8 +8,8 @@
 # GitHub Repository: https://github.com/Nubbie16/PasswordStrengthChecker 
 
 
-
 # AI generated lists to be flagged/auto failed.
+
 
 COMMON_PASSWORDS = {
     "abc",

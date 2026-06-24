@@ -26,7 +26,7 @@ Rule List:
 12. Sequential number penalty           #Penalty for >= 3 sequential numbers
 13. Keyboard pattern penalty            #Penalty if pattern in password is in KEYBOARD_PATTERNS list
 14. All-numeric penalty                 #Pass/Fail if < 16 == FAIL. Otherwise >= 16 == penalty)
-15. Final strength rating               #0-2 = Weak
+15/16. Final score/strength rating     #0-2 = Weak
                                          3-5 = Average
                                          6-7 = Strong
                                          8   = Very Strong
@@ -34,29 +34,20 @@ Rule List:
 
 import CheckLogic
 
-password = ""
-
-def get_strength(score):
-    if score <= 2:
-        return "Weak"
-    elif score <= 5:
-        return "Average"
-    elif score <= 8:
-        return "Strong"
-    else:
-        return "Very Strong"
-
-
 def main():
     print("Program Start")
-
     password = input("Please enter password: ")
 
-    score = CheckLogic.check_strength(password)
-    strength = get_strength(score)
     
-    print(f"Score: {score}")
-    print(f"Strength: {strength}")
+
+    score = CheckLogic.check_strength(password)
+
+    if score == -1:
+        print("Password failed")
+    else:
+        strength = CheckLogic.get_strength(score)
+        print(f"Score: {score}")
+        print(f"Strength: {strength}")
 
 
 if __name__ == "__main__":
