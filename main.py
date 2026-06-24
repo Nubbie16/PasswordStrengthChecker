@@ -13,7 +13,7 @@ Rule List:
 2. Emoji / non-ASCII check              #Pass/Fail
 3. Minimum length check                 #Pass/Fail < 8
 4. Common password check                #Pass/Fail for EXACT password in COMMON_PASSWORDS list 
-5. Contains common weak word check      #Penalty if word in password is in WEAK_WORDS list
+5. Contains common weak word check      #Penalty if word in password is in WEAK_WORDS list  -2
 6. Length scoring                       #Add to Score
                                                 8-11  = +1
                                                 12-15 = +3
@@ -22,11 +22,11 @@ Rule List:
 8. Uppercase check                      #Add to Score +1
 9. Number check                         #Add to Score +1
 10. Special character check             #Add to Score +1
-11. Repeating character penalty         #Penalty for >= 3 repeating characters
-12. Sequential number penalty           #Penalty for >= 3 sequential numbers
-13. Keyboard pattern penalty            #Penalty if pattern in password is in KEYBOARD_PATTERNS list
-14. All-numeric penalty                 #Pass/Fail if < 16 == FAIL. Otherwise >= 16 == penalty)
-15/16. Final score/strength rating     #0-2 = Weak
+11. Repeating character penalty         #Penalty for >= 3 repeating characters  -1
+12. Sequential number penalty           #Penalty for >= 3 sequential numbers    -1
+13. Keyboard pattern penalty            #Penalty if pattern in password is in KEYBOARD_PATTERNS list    -2
+14. All-numeric penalty                 #Pass/Fail if < 16 == FAIL. Otherwise >= 16 == penalty) -2
+15/16. Final score/strength rating      #0-2 = Weak
                                          3-5 = Average
                                          6-7 = Strong
                                          8   = Very Strong

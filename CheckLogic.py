@@ -62,6 +62,8 @@ def not_common(password):
 
 # 5. Contains common weak word check    # -2
 def contains_weak_PEN(password):
+    password = password.tolower()
+
     for weak in WEAK_WORDS:
         if weak in password:
             return -2
@@ -138,6 +140,8 @@ def seq_number_PEN(password):
 
 # 13. Keyboard pattern penalty          # -2
 def contains_key_pattern_PEN(password):
+    password = password.tolower()
+
     for key in KEYBOARD_PATTERNS:
         if key in password:
             return -2
@@ -145,23 +149,22 @@ def contains_key_pattern_PEN(password):
 
 # 14. All-numeric penalty (< 16 == FAIL, >= 16 == penalty)      # Pass/Fail or -2
 def all_nums_length_PEN(password):
-    if meets_min_length(password) == False:
-        return -1
+    if password.isdigit() and len(password) >= 16:
+        return 2
     
-    for char in password:
-        value = ord(char)
-        if value < 48 or value > 57:
-            return -1
-        else:
-            if len(password) < 16:
-                return 2
     return 0
+
+#14.1
+def short_all_numeric_fail(password):
+    return not (password.isdigit() and len(password) < 16)
+
 
 PASS_FAIL_FUNCS = [
     is_filled,               # 1. Empty password check
     contains_only_ascii,     # 2. Emoji / non-ASCII check
     meets_min_length,        # 3. Minimum length check
-    not_common               # 4. Common password check
+    not_common,              # 4. Common password check
+    short_all_numeric_fail   #14.1
 ]
 
 def pass_fail_check(password):         # 1.-4. will return False immediately w/o any additional checks 
@@ -174,23 +177,28 @@ def pass_fail_check(password):         # 1.-4. will return False immediately w/o
 # 15. Determines final score
 def check_strength(password):
 
-    if pass_fail_check(password) == False:
+    if pass_fail_check(password) == False:      #checks all Pass/Fail rules, #1-4
         return -1
     
+    score = 0
+    penalties = 0
 
+    penalties += contains_weak_PEN(password)
+    score += length_score(password)
+    score += has_lowercase_score(password)
+    score += has_uppercase_score(password)
+    score += has_number_score(password)
+    score += has_special_score(password)
+    penalties += repeating_chars_PEN(password)
+    penalties += seq_number_PEN(password)
+    penalties += contains_key_pattern_PEN(password)
+    penalties += all_nums_length_PEN(password)
+    
+    score -= penalties
 
-
-    # 5. Contains common weak word check
-    # 6. Length scoring
-    # 7. Lowercase check
-    # 8. Uppercase check
-    # 9. Number check
-    # 10. Special character check
-    # 11. Repeating character penalty
-    # 12. Sequential number penalty
-    # 13. Keyboard pattern penalty
-    # 14. All-numeric penalty (< 16 == FAIL, >= 16 == penalty)
-    score = 5   #TEST DATA
+    if score < 0:
+        score = 0
+    
     return score
 
 
