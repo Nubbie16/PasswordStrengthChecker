@@ -36,18 +36,23 @@ import CheckLogic
 
 def main():
     print("Program Start")
-    password = input("Please enter password: ")
 
-    
+    while True:
+        password = input("\nPlease enter password, or type X to exit: ")
 
-    score = CheckLogic.check_strength(password)
+        if password.lower() == "x":
+            print("Program ended.")
+            break
 
-    if score == -1:
-        print("Password failed")
-    else:
-        strength = CheckLogic.get_strength(score)
-        print(f"Score: {score}")
-        print(f"Strength: {strength}")
+        score = CheckLogic.check_strength(password)
+
+        if score == -1:
+            print("Password failed required checks.")
+        else:
+            strength = CheckLogic.get_strength(score)
+
+            print(f"Score: {score}")
+            print(f"Strength: {strength}")
 
 
 if __name__ == "__main__":

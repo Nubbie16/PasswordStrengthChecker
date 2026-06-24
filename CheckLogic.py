@@ -35,6 +35,7 @@ Rule List:
 
 from PasswordData import WEAK_WORDS, COMMON_PASSWORDS, KEYBOARD_PATTERNS
 import re
+import string
 
 # 1. Empty password check               # Pass/Fail
 def is_filled(password):
@@ -62,7 +63,7 @@ def not_common(password):
 
 # 5. Contains common weak word check    # -2
 def contains_weak_PEN(password):
-    password = password.tolower()
+    password = password.lower()
 
     for weak in WEAK_WORDS:
         if weak in password:
@@ -140,7 +141,7 @@ def seq_number_PEN(password):
 
 # 13. Keyboard pattern penalty          # -2
 def contains_key_pattern_PEN(password):
-    password = password.tolower()
+    password = password.lower()
 
     for key in KEYBOARD_PATTERNS:
         if key in password:
