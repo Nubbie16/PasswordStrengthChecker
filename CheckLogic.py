@@ -145,7 +145,7 @@ def contains_key_pattern_PEN(password):
 
     for key in KEYBOARD_PATTERNS:
         if key in password:
-            return -2
+            return 2
     return 0
 
 # 14. All-numeric penalty (< 16 == FAIL, >= 16 == penalty)      # Pass/Fail or -2
