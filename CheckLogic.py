@@ -57,7 +57,7 @@ def meets_min_length(password):
 # 4. Common password check              # Pass/Fail
 def not_common(password):
     for common in COMMON_PASSWORDS:
-        if common == True:
+        if common == password.lower():
             return False
     return True
 
@@ -66,8 +66,8 @@ def contains_weak_PEN(password):
     password = password.lower()
 
     for weak in WEAK_WORDS:
-        if weak in password:
-            return -2
+        if weak.lower() in password:
+            return 2
     return 0
 
 # 6. Length scoring                     # 8-11 = +1       12-15 = +3       16 or more = +4

@@ -40,7 +40,7 @@ def main():
     while True:
         password = input("\nPlease enter password, or type X to exit: ")
 
-        if password.lower() == "x":
+        if password.strip().lower() == "x":
             print("Program ended.")
             break
 

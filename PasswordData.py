@@ -92,13 +92,6 @@ WEAK_WORDS = {
     "signin",
     "logmein",
 
-    # Keyboard patterns
-    "qwerty",
-    "asdf",
-    "zxcv",
-    "qaz",
-    "wsx",
-
     # Common emotional/simple words
     "love",
     "iloveyou",
@@ -128,6 +121,8 @@ KEYBOARD_PATTERNS = {
     "asdfghjkl",
     "zxcv",
     "zxcvbn",
+    "qaz",
+    "wsx",
 
     # Common keyboard + number patterns
     "qwerty123",
