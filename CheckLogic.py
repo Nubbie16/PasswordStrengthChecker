@@ -38,12 +38,12 @@ import re
 import string
 
 # 1. Empty password check               # Pass/Fail
-def is_filled(password):
-    return password.strip() != ""       #returns the condition directly, simplifing the if statement
+def is_filled(pswd):
+    return pswd.strip() != ""       #returns the condition directly, simplifing the if statement
 
 # 2. Emoji / non-ASCII check            # Pass/Fail
-def contains_only_ascii(password):
-    for char in password:
+def contains_only_ascii(pswd):
+    for char in pswd:
         value = ord(char)
 
         if value < 33 or value > 126:
@@ -51,28 +51,28 @@ def contains_only_ascii(password):
     return True
 
 # 3. Minimum length check               # Pass/Fail
-def meets_min_length(password):
-    return len(password) >= 8
+def meets_min_length(pswd):
+    return len(pswd) >= 8
 
 # 4. Common password check              # Pass/Fail
-def not_common(password):
+def not_common(pswd):
     for common in COMMON_PASSWORDS:
-        if common == password.lower():
+        if common == pswd.lower():
             return False
     return True
 
 # 5. Contains common weak word check    # -2
-def contains_weak_PEN(password):
-    password = password.lower()
+def contains_weak_PEN(pswd):
+    pswd = pswd.lower()
 
     for weak in WEAK_WORDS:
-        if weak.lower() in password:
+        if weak.lower() in pswd:
             return 2
     return 0
 
 # 6. Length scoring                     # 8-11 = +1       12-15 = +3       16 or more = +4
-def length_score(password):
-    length = len(password)
+def length_score(pswd):
+    length = len(pswd)
 
     if length >= 8 and length < 12:
         return 1
@@ -82,82 +82,82 @@ def length_score(password):
         return 4
 
 # 7. Lowercase check                    # +1
-def has_lowercase_score(password):
-    if any(char.islower() for char in password):
+def has_lowercase_score(pswd):
+    if any(char.islower() for char in pswd):
         return 1
     else:
         return 0
 
 # 8. Uppercase check                    # +1
-def has_uppercase_score(password):
-    if any(char.isupper() for char in password):
+def has_uppercase_score(pswd):
+    if any(char.isupper() for char in pswd):
         return 1
     else:
         return 0
 
 # 9. Number check                       # +1
-def has_number_score(password):
-    if any(char.isdigit() for char in password):
+def has_number_score(pswd):
+    if any(char.isdigit() for char in pswd):
         return 1
     else:
         return 0
 
 # 10. Special character check           # +1
-def has_special_score(password):
+def has_special_score(pswd):
 
     special_chars = "!@#$%^&*()-_=+[]{}|;:'\",.<>?/`~"
 
-    if any(char in special_chars for char in password):
+    if any(char in special_chars for char in pswd):
         return 1
     else:
         return 0
 
 # 11. Repeating character penalty       # -1
-def repeating_chars_PEN(password):
+def repeating_chars_PEN(pswd):
 
-    if re.search(r"(.)\1{2,}", password) is not None:
+    if re.search(r"(.)\1{2,}", pswd) is not None:
         return 1
     else:
         return 0
 
 # 12. Sequential number penalty         # -1
-def seq_number_PEN(password):
+def seq_number_PEN(pswd):
     ascending = "0123456789"
     descending = "9876543210"
 
     for i in range(len(ascending) - 2):
         seq = ascending[i:i + 3]
 
-        if seq in password:
+        if seq in pswd:
             return 1
 
     for i in range(len(descending) - 2):
         seq = descending[i:i + 3]
         
-        if seq in password:
+        if seq in pswd:
             return 1
 
     return 0
 
 # 13. Keyboard pattern penalty          # -2
-def contains_key_pattern_PEN(password):
-    password = password.lower()
+def contains_key_pattern_PEN(pswd):
+    pswd = pswd.lower()
 
     for key in KEYBOARD_PATTERNS:
-        if key in password:
+        if key in pswd:
             return 2
     return 0
 
 # 14. All-numeric penalty (< 16 == FAIL, >= 16 == penalty)      # Pass/Fail or -2
-def all_nums_length_PEN(password):
-    if password.isdigit() and len(password) >= 16:
+def all_nums_length_PEN(pswd):
+    if pswd.isdigit() and len(pswd) >= 16:
         return 2
     
     return 0
 
 #14.1
-def short_all_numeric_fail(password):
-    return not (password.isdigit() and len(password) < 16)
+def short_all_numeric_fail(pswd):
+    return not (pswd.isdigit() and len(pswd) < 16)
 
 
 PASS_FAIL_FUNCS = [
@@ -168,39 +168,52 @@ PASS_FAIL_FUNCS = [
     short_all_numeric_fail   #14.1
 ]
 
-def pass_fail_check(password):         # 1.-4. will return False immediately w/o any additional checks 
+FAIL_REASONS = [             # Fail reason to provide to user.
+    "A password was not submitted.",
+    "Non-valid characters were submitted. These are spaces and\nany characters that are not on a standard keyboard.",
+    "Minimum character length of 8 was not met.",
+    "Password was found in a 'Commonly Used Password' list. Add addidtional\ncharacters or choose another password.",
+    "Minimum length of all-numeric password not met. Must be at least 16 numbers."
+]
+
+
+def pass_fail_check(pswd):         # 1.-4. will return False immediately w/o any additional checks 
     
-        for check in PASS_FAIL_FUNCS:
-            if check(password) != True:
-                return False    # checks did not pass. password failed
-        return True     
+        for check, reason in zip(PASS_FAIL_FUNCS, FAIL_REASONS):
+            if check(pswd) != True:
+                return False, reason    # checks did not pass. password failed
+        return True, ""
+
     
 # 15. Determines final score
-def check_strength(password):
+def check_strength(pswd):
+    
+    passed, reason = pass_fail_check(pswd)
 
-    if pass_fail_check(password) == False:      #checks all Pass/Fail rules, #1-4
-        return -1
+
+    if passed == False:      #checks all Pass/Fail rules, #1-4
+        return -1, reason
     
     score = 0
     penalties = 0
 
-    penalties += contains_weak_PEN(password)
-    score += length_score(password)
-    score += has_lowercase_score(password)
-    score += has_uppercase_score(password)
-    score += has_number_score(password)
-    score += has_special_score(password)
-    penalties += repeating_chars_PEN(password)
-    penalties += seq_number_PEN(password)
-    penalties += contains_key_pattern_PEN(password)
-    penalties += all_nums_length_PEN(password)
+    penalties += contains_weak_PEN(pswd)
+    score += length_score(pswd)
+    score += has_lowercase_score(pswd)
+    score += has_uppercase_score(pswd)
+    score += has_number_score(pswd)
+    score += has_special_score(pswd)
+    penalties += repeating_chars_PEN(pswd)
+    penalties += seq_number_PEN(pswd)
+    penalties += contains_key_pattern_PEN(pswd)
+    penalties += all_nums_length_PEN(pswd)
     
     score -= penalties
 
     if score < 0:
         score = 0
     
-    return score
+    return score, ""
 
 
 # 16. Final strength rating

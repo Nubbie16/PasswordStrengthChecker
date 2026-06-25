@@ -24,6 +24,7 @@ COMMON_PASSWORDS = {
     "hello",
     "hello123",
 
+    "password",
     "password1",
     "password12",
     "password123",

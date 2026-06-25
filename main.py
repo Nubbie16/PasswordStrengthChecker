@@ -33,21 +33,23 @@ Rule List:
 """ 
 
 import CheckLogic
+import getpass
 
 def main():
     print("Program Start")
 
     while True:
-        password = input("\nPlease enter password, or type X to exit: ")
+        pswd = getpass.getpass("\nPlease enter password, or type X to exit: ")
 
-        if password.strip().lower() == "x":
+        if pswd.strip().lower() == "x":
             print("Program ended.")
             break
 
-        score = CheckLogic.check_strength(password)
+        score, reason = CheckLogic.check_strength(pswd)
 
         if score == -1:
             print("Password failed required checks.")
+            print(f"Reason: {reason}")
         else:
             strength = CheckLogic.get_strength(score)
 
